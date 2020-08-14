@@ -1,0 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&family=Suwannaphum&display=swap");
+
+#root {
+	font-family: "Mulish", sans-serif;
+}
+html {
+	background-color: #343a40;
+}
