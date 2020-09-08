@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-CORONA VIRUS TRACKER 2020
-=======
 # coronavirus-tracker
 ## Made during my summer of Quarantine during COVID-19 *(first time using Axios)*
 
@@ -22,4 +19,3 @@ CORONA VIRUS TRACKER 2020
     * Total Cases
 
 ![Preview of Site](./coronavirus-tracker.png)
->>>>>>> 91b03644ab361b3d24bfeb755deaf497dfd2757a
