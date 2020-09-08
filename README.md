@@ -18,3 +18,4 @@
     * Total Deaths
     * Total Cases
 
+![Preview of Site](./coronavirus-tracker.png)
