@@ -7,40 +7,39 @@ import { v4 as uuidv4 } from "uuid";
 import Columns from "react-columns";
 import { Form } from "react-bootstrap";
 import "./App.css";
-import { Navbar, Nav, NavDropdown } from "react-bootstrap";
+import { Navbar } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
-import AccessAlarmsIcon from "@material-ui/icons/AccessAlarms";
+import AccountTreeIcon from "@material-ui/icons/AccountTree";
 function App() {
 	const [latest, setLatest] = useState([]); //world
 	const [results, setResults] = useState([]); //countries
+	const [states, setStates] = useState([]); //states
 	const [query, setQuery] = useState(""); //searchbar
 
-	/* useEffect(() => { THIS CODE IS FOR USING 1 API
-		axios
-			.get("https://corona.lmao.ninja/v2/all")
-			.then((res) => {
-				setLatest(res.data);
-			})
-			.catch((err) => {
-				console.log(err.data);
-			}); 
-	}, []); */
+	useEffect(() => {
+		const timeOutId = setTimeout(() => {}, 500);
+		return () => clearTimeout(timeOutId);
+	}, [query]);
+
 	useEffect(() => {
 		// snippet of code(1) which runs on specific condition(2)
 		axios // in this case, on page load
 			.all([
 				axios.get("https://corona.lmao.ninja/v2/all"),
 				axios.get("https://corona.lmao.ninja/v2/countries?sort=country"),
+				axios.get("https://corona.lmao.ninja/v2/states"),
 			])
 			.then((res) => {
 				//this useEffect is for getting 2 APIS at the same time
 				setLatest(res[0].data);
 				setResults(res[1].data);
+				setStates(res[2].data);
 			})
 			.catch((err) => {
 				console.log(err);
 			});
 	}, []);
+
 	let wwTests = String(latest.tests).replace(/(.)(?=(\d{3})+$)/g, "$1,");
 	let wwCases = String(latest.cases).replace(/(.)(?=(\d{3})+$)/g, "$1,");
 	let wwRecoveries = String(latest.recovered).replace(
@@ -53,7 +52,14 @@ function App() {
 	const filterCountry = results.filter((item) => {
 		return query !== "" ? item.country.includes(query) : item;
 	});
-	const countries = filterCountry.map((data) => {
+	const filterStates = states.filter((item) => {
+		return query !== "" ? item.state.includes(query) : item;
+	});
+	function numberWithCommas(x) {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+
+	const countriesData = filterCountry.map((data) => {
 		return (
 			<div key={uuidv4()} className="country">
 				<Card
@@ -68,13 +74,60 @@ function App() {
 						<Card.Subtitle>
 							<hr />
 						</Card.Subtitle>
-						<Card.Text>Total Cases: {data.cases}</Card.Text>
-						<Card.Text>Total Deaths: {data.deaths}</Card.Text>
-						<Card.Text>Total Recovered: {data.recovered}</Card.Text>
-						<Card.Text>Cases Today: {data.todayCases}</Card.Text>
-						<Card.Text>Deaths Today: {data.todayDeaths}</Card.Text>
-						<Card.Text>Active Posessors: {data.active}</Card.Text>
-						<Card.Text>Critical Condition: {data.critical}</Card.Text>
+						<Card.Text>Total Cases: {numberWithCommas(data.cases)}</Card.Text>
+						<Card.Text>Total Deaths: {numberWithCommas(data.deaths)}</Card.Text>
+						<Card.Text>
+							Total Recovered: {numberWithCommas(data.recovered)}
+						</Card.Text>
+						<Card.Text>
+							Cases Today: {numberWithCommas(data.todayCases)}
+						</Card.Text>
+						<Card.Text>
+							Deaths Today: {numberWithCommas(data.todayDeaths)}
+						</Card.Text>
+						<Card.Text>
+							Active Posessors: {numberWithCommas(data.active)}
+						</Card.Text>
+						<Card.Text>
+							Critical Condition: {numberWithCommas(data.critical)}
+						</Card.Text>
+					</Card.Body>
+				</Card>
+			</div>
+		);
+	});
+	const statesData = filterStates.map((data) => {
+		return (
+			<div key={uuidv4()} className="country">
+				<Card
+					bg="success"
+					text="white"
+					className="text-center bubble-effect"
+					style={{ margin: "10px" }}
+				>
+					<Card.Body>
+						{/* <Card.Img variant="top" src={data.countryInfo.flag}></Card.Img> */}
+						<Card.Title>{data.state}</Card.Title>
+						<Card.Subtitle>
+							<hr />
+						</Card.Subtitle>
+						<Card.Text>Total Cases: {numberWithCommas(data.cases)}</Card.Text>
+						<Card.Text>Total Deaths: {numberWithCommas(data.deaths)}</Card.Text>
+						<Card.Text>
+							Total Recovered: {numberWithCommas(data.recovered)}
+						</Card.Text>
+						<Card.Text>
+							Cases Today: {numberWithCommas(data.todayCases)}
+						</Card.Text>
+						<Card.Text>
+							Deaths Today: {numberWithCommas(data.todayDeaths)}
+						</Card.Text>
+						<Card.Text>
+							Active Posessors: {numberWithCommas(data.active)}
+						</Card.Text>
+						{/* <Card.Text>
+							Critical Condition: {numberWithCommas(data.critical)}
+						</Card.Text> */}
 					</Card.Body>
 				</Card>
 			</div>
@@ -104,32 +157,8 @@ function App() {
 				variant="dark"
 			>
 				<Navbar.Brand className="nav-brand" href="#home">
-					Cordona Virus Tracker <AccessAlarmsIcon className="logo" />
+					Corona Virus Tracker <AccountTreeIcon className="logo" />
 				</Navbar.Brand>
-				<Navbar.Toggle aria-controls="responsive-navbar-nav" />
-				<Navbar.Collapse id="responsive-navbar-nav">
-					<Nav className="mr-auto">
-						<Nav.Link href="#features">Features</Nav.Link>
-						<Nav.Link href="#pricing">Pricing</Nav.Link>
-						<NavDropdown title="About" id="collasible-nav-dropdown">
-							<NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-							<NavDropdown.Item href="#action/3.2">
-								Another action
-							</NavDropdown.Item>
-							<NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-							<NavDropdown.Divider />
-							<NavDropdown.Item href="#action/3.4">
-								Separated link
-							</NavDropdown.Item>
-						</NavDropdown>
-					</Nav>
-					<Nav>
-						<Nav.Link href="#deets">More deets</Nav.Link>
-						<Nav.Link eventKey={2} href="#memes">
-							Dank memes
-						</Nav.Link>
-					</Nav>
-				</Navbar.Collapse>
 			</Navbar>
 			<Form>
 				<Form.Group controlId="formGroupSearch">
@@ -143,7 +172,7 @@ function App() {
 					/>
 				</Form.Group>
 				<Button className="search-button" variant="dark">
-					Search Country
+					Search
 				</Button>{" "}
 				<div className="search-bottom"> </div>
 			</Form>
@@ -219,7 +248,8 @@ function App() {
 				</Card>
 			</CardDeck>
 
-			<Columns queries={queries}>{countries}</Columns>
+			<Columns queries={queries}>{countriesData}</Columns>
+			<Columns queries={queries}>{statesData}</Columns>
 			<br />
 		</div>
 	);
