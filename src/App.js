@@ -7,14 +7,18 @@ import { v4 as uuidv4 } from "uuid";
 import Columns from "react-columns";
 import { Form } from "react-bootstrap";
 import "./App.css";
-import { Navbar } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
+import { Navbar, NavDropdown } from "react-bootstrap";
 import AccountTreeIcon from "@material-ui/icons/AccountTree";
+import { Search } from "@material-ui/icons";
+
 function App() {
 	const [latest, setLatest] = useState([]); //world
 	const [results, setResults] = useState([]); //countries
 	const [states, setStates] = useState([]); //states
 	const [query, setQuery] = useState(""); //searchbar
+	const [stateFlag, setStateFlag] = useState([]); //state flag images
+	const [toggleStates, setToggleStates] = useState(false);
+	const [toggleCountries, setToggleCountries] = useState(true);
 
 	useEffect(() => {
 		const timeOutId = setTimeout(() => {}, 500);
@@ -28,12 +32,16 @@ function App() {
 				axios.get("https://corona.lmao.ninja/v2/all"),
 				axios.get("https://corona.lmao.ninja/v2/countries?sort=country"),
 				axios.get("https://corona.lmao.ninja/v2/states"),
+				axios.get(
+					"https://raw.githubusercontent.com/CivilServiceUSA/us-states/master/data/states.json"
+				),
 			])
 			.then((res) => {
-				//this useEffect is for getting 2 APIS at the same time
-				setLatest(res[0].data);
-				setResults(res[1].data);
-				setStates(res[2].data);
+				//this useEffect is for getting 3 APIS at the same time
+				setLatest(res[0].data); //worldwide
+				setResults(res[1].data); //countries
+				setStates(res[2].data); //states
+				setStateFlag(res[3].data); //set flags for states
 			})
 			.catch((err) => {
 				console.log(err);
@@ -50,15 +58,53 @@ function App() {
 	const date = new Date(parseInt(latest.updated));
 	const stringDate = date.toString();
 	const filterCountry = results.filter((item) => {
-		return query !== "" ? item.country.includes(query) : item;
+		if (query !== "") {
+			return item.country.toLowerCase().includes(query.toLowerCase());
+		} else {
+			return item;
+		}
 	});
 	const filterStates = states.filter((item) => {
-		return query !== "" ? item.state.includes(query) : item;
+		if (query !== "") {
+			return item.state.toLowerCase().includes(query.toLowerCase());
+		} else {
+			return item;
+		}
+	});
+	const filterStateFlag = stateFlag.filter((item) => {
+		if (query !== "") {
+			return item.state.toLowerCase().includes(query.toLowerCase());
+		} else {
+			return item;
+		}
 	});
 	function numberWithCommas(x) {
 		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	}
+	let toggleCountriesClick = (e) => {
+		e.preventDefault();
+		setToggleStates(false);
+		setToggleCountries(true);
+		setQuery("");
+	};
 
+	let toggleStatesClick = (e) => {
+		e.preventDefault();
+		setToggleStates(true);
+		setToggleCountries(false);
+		setQuery("");
+	};
+
+	const style = {
+		borderRadius: 10,
+
+		marginBottom: 10,
+	};
+	let search = (e) => {
+		if (e.keyCode === 13) {
+			setQuery(e.target.value);
+		}
+	};
 	const countriesData = filterCountry.map((data) => {
 		return (
 			<div key={uuidv4()} className="country">
@@ -69,7 +115,11 @@ function App() {
 					style={{ margin: "10px" }}
 				>
 					<Card.Body>
-						<Card.Img variant="top" src={data.countryInfo.flag}></Card.Img>
+						<Card.Img
+							variant="top"
+							style={style}
+							src={data.countryInfo.flag}
+						></Card.Img>
 						<Card.Title>{data.country}</Card.Title>
 						<Card.Subtitle>
 							<hr />
@@ -106,7 +156,18 @@ function App() {
 					style={{ margin: "10px" }}
 				>
 					<Card.Body>
-						{/* <Card.Img variant="top" src={data.countryInfo.flag}></Card.Img> */}
+						{filterStateFlag.map((data1) => {
+							if (data.state == data1.state) {
+								return (
+									<Card.Img
+										key={data1.state}
+										variant="top"
+										style={style}
+										src={data1.state_flag_url}
+									></Card.Img>
+								);
+							}
+						})}
 						<Card.Title>{data.state}</Card.Title>
 						<Card.Subtitle>
 							<hr />
@@ -150,32 +211,38 @@ function App() {
 	return (
 		<div className="App">
 			<Navbar
+				fixed="top"
+				variant="dark"
 				className="header"
 				collapseOnSelect
 				expand="lg"
-				bg="dark"
-				variant="dark"
 			>
 				<Navbar.Brand className="nav-brand" href="#home">
 					Corona Virus Tracker <AccountTreeIcon className="logo" />
 				</Navbar.Brand>
-			</Navbar>
-			<Form>
-				<Form.Group controlId="formGroupSearch">
+
+				<NavDropdown title="Filter" id="collapsible-nav-dropdown">
+					<NavDropdown.Item onClick={toggleCountriesClick}>
+						Countries
+					</NavDropdown.Item>
+					<NavDropdown.Divider />
+					<NavDropdown.Item onClick={toggleStatesClick}>
+						States
+					</NavDropdown.Item>
+				</NavDropdown>
+
+				<Form>
 					<Form.Control
+						placeholder="Search"
 						type="text"
-						className="searchbar"
-						onChange={(e) => {
-							setQuery(e.target.value);
+						className="mr-sm-2"
+						onKeyDown={(e) => {
+							search(e);
 						}}
 						autoComplete="off"
 					/>
-				</Form.Group>
-				<Button className="search-button" variant="dark">
-					Search
-				</Button>{" "}
-				<div className="search-bottom"> </div>
-			</Form>
+				</Form>
+			</Navbar>
 
 			<CardDeck className="card-deck">
 				<Card
@@ -247,9 +314,12 @@ function App() {
 					</Card.Footer>
 				</Card>
 			</CardDeck>
+			{toggleCountries ? (
+				<Columns queries={queries}>{countriesData}</Columns>
+			) : (
+				<Columns queries={queries}>{statesData}</Columns>
+			)}
 
-			<Columns queries={queries}>{countriesData}</Columns>
-			<Columns queries={queries}>{statesData}</Columns>
 			<br />
 		</div>
 	);

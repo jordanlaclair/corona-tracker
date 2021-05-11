@@ -16,13 +16,9 @@
 	margin-right: 50px;
 }
 .searchbar {
-	position: fixed;
 	z-index: 1;
-	top: 53px;
-	left: 135px;
-	width: 93%;
-	border-radius: 0%;
-	height: 3rem;
+	width: 90vh;
+	border-radius: 10px;
 	border: 0px;
 	background-color: gray;
 }
@@ -43,11 +39,11 @@
 }
 
 .header {
-	position: fixed;
+	color: white;
+	background: black;
 	z-index: 2;
 	width: 100%;
-	top: 0px;
-	height: 3.5rem;
+	height: 4rem;
 }
 .searchbar-wrap {
 	display: flex;
@@ -71,6 +67,11 @@
 .bubble-effect:hover {
 	animation: bounceOut 0.4s linear;
 }
+#collapsible-nav-dropdown {
+	color: white;
+	font-size: 1.2rem;
+	margin-right: 1rem;
+}
 
 @keyframes bounceOut {
 	0% {
@@ -87,5 +88,19 @@
 	}
 	100% {
 		box-shadow: 0 0 0 3.5px gray; /* last size equal to original */
+	}
+}
+
+@media (max-width: 655px) {
+	.header {
+		height: 8.5rem;
+		justify-content: center;
+	}
+}
+
+@media (max-width: 360px) {
+	.header {
+		height: 10rem;
+		justify-content: center;
 	}
 }
