@@ -6,21 +6,21 @@ An application that keeps track of various COVID-19 facts (some listed below). M
 
 ## Live Demo
 
-[Live Link](https://covid-19-app-fe01f.web.app)
+🟢 [Live Link](https://covid-19-app-fe01f.web.app) 🟢
 
 ## Tracks:
 
-- Cases
-- Deaths
-- Recoveries
-- Tests Inducted
-- Critical Conditions
-- Active Possessors
-- Daily Deaths
-- Daily Cases
-- Total Recoveries
-- Total Deaths
-- Total Cases
+- Cases 🧑‍⚕️
+- Deaths 💀
+- Recoveries 💉
+- Tests Inducted 🏥
+- Critical Conditions 🩸
+- Active Possessors 😷
+- Daily Deaths 💀
+- Daily Cases 🌎 💼
+- Total Recoveries 😷
+- Total Deaths 💀
+- Total Cases 📈
 
 ## Technologies
 
