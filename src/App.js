@@ -9,7 +9,6 @@ import { Form } from "react-bootstrap";
 import "./App.css";
 import { Navbar, NavDropdown } from "react-bootstrap";
 import AccountTreeIcon from "@material-ui/icons/AccountTree";
-import { Search } from "@material-ui/icons";
 
 function App() {
 	const [latest, setLatest] = useState([]); //world
@@ -19,11 +18,6 @@ function App() {
 	const [stateFlag, setStateFlag] = useState([]); //state flag images
 	const [toggleStates, setToggleStates] = useState(false);
 	const [toggleCountries, setToggleCountries] = useState(true);
-
-	useEffect(() => {
-		const timeOutId = setTimeout(() => {}, 500);
-		return () => clearTimeout(timeOutId);
-	}, [query]);
 
 	useEffect(() => {
 		// snippet of code(1) which runs on specific condition(2)
@@ -105,6 +99,11 @@ function App() {
 			setQuery(e.target.value);
 		}
 	};
+	const handleSubmit = (event) => {
+		event.preventDefault();
+		event.stopPropagation();
+	};
+
 	const countriesData = filterCountry.map((data) => {
 		return (
 			<div key={uuidv4()} className="country">
@@ -157,7 +156,7 @@ function App() {
 				>
 					<Card.Body>
 						{filterStateFlag.map((data1) => {
-							if (data.state == data1.state) {
+							if (data.state === data1.state) {
 								return (
 									<Card.Img
 										key={data1.state}
@@ -184,7 +183,7 @@ function App() {
 							Deaths Today: {numberWithCommas(data.todayDeaths)}
 						</Card.Text>
 						<Card.Text>
-							Active Posessors: {numberWithCommas(data.active)}
+							Active Possessors: {numberWithCommas(data.active)}
 						</Card.Text>
 						{/* <Card.Text>
 							Critical Condition: {numberWithCommas(data.critical)}
@@ -217,7 +216,7 @@ function App() {
 				collapseOnSelect
 				expand="lg"
 			>
-				<Navbar.Brand className="nav-brand" href="#home">
+				<Navbar.Brand className="nav-brand">
 					Corona Virus Tracker <AccountTreeIcon className="logo" />
 				</Navbar.Brand>
 
@@ -231,15 +230,13 @@ function App() {
 					</NavDropdown.Item>
 				</NavDropdown>
 
-				<Form>
+				<Form noValidate onSubmit={handleSubmit}>
 					<Form.Control
-						placeholder="Search"
 						type="text"
-						className="mr-sm-2"
-						onKeyDown={(e) => {
-							search(e);
-						}}
+						className="mr-sm-2 searchbar"
+						onKeyDown={search}
 						autoComplete="off"
+						placeholder={toggleStates ? "Search States" : "Search Countries"}
 					/>
 				</Form>
 			</Navbar>
@@ -259,7 +256,7 @@ function App() {
 						<Card.Text>{wwCases}</Card.Text>
 					</Card.Body>
 					<Card.Footer>
-						<small>Last updated:{stringDate}</small>
+						<small>Last updated: {stringDate}</small>
 					</Card.Footer>
 				</Card>
 				<Card
@@ -276,7 +273,7 @@ function App() {
 						<Card.Text>{wwDeaths}</Card.Text>
 					</Card.Body>
 					<Card.Footer>
-						<small>Last updated:{stringDate}</small>
+						<small>Last updated: {stringDate}</small>
 					</Card.Footer>
 				</Card>
 				<Card
@@ -293,7 +290,7 @@ function App() {
 						<Card.Text>{wwRecoveries}</Card.Text>
 					</Card.Body>
 					<Card.Footer>
-						<small>Last updated:{stringDate}</small>
+						<small>Last updated: {stringDate}</small>
 					</Card.Footer>
 				</Card>
 				<Card
