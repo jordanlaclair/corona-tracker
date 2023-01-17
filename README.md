@@ -1,6 +1,7 @@
 # Covid-19 Statistics Tracker 👨‍🔬 🧫
 
 ## General Info
+(OUT OF DATE) - API went down.
 
 An application that keeps track of various COVID-19 facts (some listed below). Majority of code was made during my summer of quarantine during COVID-19 when I just started learning React. Polished it a little since then. 😃 I learned a lot in this project including working with API's and working with React virtual DOM.
 
